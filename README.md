@@ -65,35 +65,71 @@ That's it. The skill will be available in your agent environment automatically w
 
 ### With Claude (Anthropic)
 
-Attach the `dhanhq-skill/` directory as a skill container via the Files API:
+Use the `container.skills` parameter with beta headers `code-execution-2025-08-25` and `skills-2025-10-02`:
 
 ```python
 import anthropic
 
 client = anthropic.Anthropic()
 
-# Upload SKILL.md as the entry point
-with open("dhanhq-skill/SKILL.md", "rb") as f:
-    skill = client.beta.files.upload(
-        file=("SKILL.md", f, "text/markdown"),
-    )
-
 response = client.beta.messages.create(
     model="claude-opus-4-5",
-    max_tokens=1024,
-    messages=[{"role": "user", "content": "Place a buy order for 1 share of TCS"}],
-    system=[{
-        "type": "text",
-        "text": open("dhanhq-skill/SKILL.md").read(),
-        "cache_control": {"type": "ephemeral"}
+    max_tokens=4096,
+    betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+    container={
+        "skills": [
+            {
+                "type": "user",
+                "skill_id": "<your-uploaded-skill-id>"
+            }
+        ]
+    },
+    messages=[{
+        "role": "user",
+        "content": "Place a buy order for 1 share of TCS at market price"
     }],
-    betas=["files-api-2025-04-14"],
+    tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
 )
 ```
 
+> **Upload the skill first** via `POST /v1/skills` or using the `npx skills add` CLI, then reference it by `skill_id` in `container.skills`.
+
+---
+
 ### With OpenAI
 
-Attach as a system prompt or assistant context following the [Agent Skills standard](https://agentskills.dev).
+Upload the skill folder via the Skills API, then reference it in your agent calls:
+
+```bash
+# Step 1: Upload the skill (zip the folder first)
+zip -r dhanhq-agent-skill.zip dhanhq-skill/
+
+curl -X POST 'https://api.openai.com/v1/skills' \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F 'files=@./dhanhq-agent-skill.zip;type=application/zip'
+# Returns: { "id": "skill_abc123", ... }
+```
+
+```python
+# Step 2: Use in your agent call with hosted shell
+import openai
+
+client = openai.OpenAI()
+
+response = client.responses.create(
+    model="gpt-4o",
+    tools=[{
+        "type": "shell",
+        "environment": {
+            "type": "container_auto",
+            "skills": [
+                {"type": "skill_reference", "skill_id": "skill_abc123"}
+            ]
+        }
+    }],
+    input="Place a buy order for 1 share of TCS"
+)
+```
 
 ---
 
