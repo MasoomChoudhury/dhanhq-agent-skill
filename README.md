@@ -6,6 +6,20 @@ This skill gives an AI agent full, accurate knowledge of the DhanHQ API v2.0 —
 
 ---
 
+## 📦 Installation
+
+```bash
+npx skills add MasoomChoudhury/dhanhq-agent-skill
+```
+
+That's it. The skill will be available in your agent environment automatically when DhanHQ trading or market data tasks are relevant.
+
+> **Manual install:** Clone or download this repo and point your agent runtime at the `dhanhq-skill/` directory.
+
+---
+
+---
+
 ## ✨ What's Included
 
 ### Trading APIs
@@ -99,6 +113,26 @@ python dhanhq-skill/tools/instrument_lookup.py find_options NIFTY 2024-10-31 250
 python dhanhq-skill/tools/instrument_lookup.py list_expiries BANKNIFTY OPTIDX
 python dhanhq-skill/tools/instrument_lookup.py find_futures NIFTY M
 ```
+
+---
+
+## 🔐 Security Notes
+
+**Treat this skill like code — review it before installing.**
+
+| Component | What it does | Trust level |
+|---|---|---|
+| `dhanhq-skill/*.md` | Read-only documentation — no execution | ✅ Safe |
+| `dhanhq-skill/reference/*.md` | Read-only reference — no execution | ✅ Safe |
+| `tools/instrument_lookup.py` | **Runs Python, downloads files from the internet** | ⚠️ Review before use |
+
+**About `tools/instrument_lookup.py`:**
+- Downloads CSV files from `images.dhan.co` (DhanHQ's official CDN) and saves them to a local `.cache/` directory
+- Runs SQL queries via DuckDB on your local machine
+- Makes no API calls to DhanHQ trading endpoints — read-only, no orders placed
+- Source is fully readable: [`dhanhq-skill/tools/instrument_lookup.py`](dhanhq-skill/tools/instrument_lookup.py)
+
+> Pin to a known commit hash when using in production environments to avoid unexpected changes on updates.
 
 ---
 
