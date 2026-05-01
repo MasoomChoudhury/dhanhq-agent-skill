@@ -1,6 +1,6 @@
 # DhanHQ Agent Skill — `dhanhq-agent-skill`
 
-A complete, production-ready **Agent Skill** for the [DhanHQ Trading API](https://dhanhq.co) — built for use with Claude, GPT-4, and any LLM platform supporting the open Agent Skills standard.
+A complete, production-ready **Agent Skill** for the [DhanHQ Trading API](https://dhanhq.co) — built for use with any LLM platform supporting the Agent Skills standard.
 
 This skill gives an AI agent full, accurate knowledge of the DhanHQ API v2.0 — order placement, portfolio management, live market data, options chains, WebSocket feeds, and more — without hallucinating endpoints or field names.
 
